@@ -114,3 +114,84 @@
 - 依赖包见 `requirements.txt`
 
 ### 2. 项目结构
+```text
+bank_marketing_project/
+├── data/
+│   ├── bank_marketing_train.csv
+│   ├── bank_marketing_test.csv
+│   ├── train_ms_processed.csv
+│   ├── train_qs_processed.csv
+│   ├── ms_test_data.csv
+│   ├── qs_test_data.csv
+│   ├── model_comparison_oof.csv
+│   └── test_predictions_best_model.csv
+├── src/
+│   ├── config.py
+│   ├── preprocessing.py
+│   ├── train.py
+│   └── utils.py
+├── run_train.py
+└── README.md
+```
+## 3. 环境配置
+
+建议使用 Python 3.8 及以上版本。
+
+安装依赖：
+
+```bash
+pip install -r requirements.txt
+```
+## 4. 运行方式
+
+### Step 1: 数据预处理
+
+预处理模块会完成缺失值处理、异常值处理、无穷值处理、特殊值替换、类别编码、数值标准化，并生成建模所需的 `processed` 数据集。
+
+如果你单独写了预处理入口脚本，可以运行：
+
+```bash
+python run_preprocessing.py
+```
+### Step 2: 模型训练与评估
+运行训练脚本：
+
+```bash
+python run_train.py
+```
+训练模块会完成以下任务：
+
+读取 processed training data
+
+使用 5-fold Stratified Cross-Validation 进行模型比较
+
+在每个 fold 的训练子集内部执行 oversampling
+
+基于 OOF（Out-of-Fold）预测计算评估指标
+
+选择最佳模型并生成测试集预测结果
+
+
+
+
+## 5. 输出文件说明
+
+运行完成后，主要输出文件包括：
+
+train_ms_processed.csv：median_standard 版本的训练集（未过采样）
+
+train_qs_processed.csv：quartile_standard 版本的训练集（未过采样）
+
+ms_test_data.csv：median_standard 版本的测试集
+
+qs_test_data.csv：quartile_standard 版本的测试集
+
+model_comparison_oof.csv：多模型横向比较结果（基于 OOF）
+
+test_predictions_best_model.csv：最佳模型在测试集上的预测结果
+
+best_lightgbm_model.txt：保存的 LightGBM 模型文件
+
+*_oof_roc_curve.png：不同模型的 OOF ROC 曲线图
+
+lgb_feature_importance.png：LightGBM 特征重要性图
